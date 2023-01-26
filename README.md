@@ -18,7 +18,7 @@ Aplicativo para usuários de academia.
 <br>
 
 <p align="center">
-  <img alt="Logo" src="./images/logo.png" width="50%">
+  <img alt="Logo" src="./images/logo.png">
 </p>
 
 ## 🚀 Tecnologias
