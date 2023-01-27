@@ -8,7 +8,7 @@ uses
   FMX.Objects, FMX.Layouts, FMX.Controls.Presentation, FMX.Edit, FMX.StdCtrls;
 
 type
-  TFrmBodyfit = class(TForm)
+  TFrmLogin = class(TForm)
     Layout1: TLayout;
     Image1: TImage;
     TabControl: TTabControl;
@@ -29,6 +29,7 @@ type
     SpeedButton1: TSpeedButton;
     Label2: TLabel;
     Edit5: TEdit;
+    procedure BtnLoginClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -36,10 +37,22 @@ type
   end;
 
 var
-  FrmBodyfit: TFrmBodyfit;
+  FrmLogin: TFrmLogin;
 
 implementation
 
 {$R *.fmx}
+
+uses UPrincipal;
+
+procedure TFrmLogin.BtnLoginClick(Sender: TObject);
+begin
+  if not Assigned(FrmPrincipal) then
+    Application.CreateForm(TFrmPrincipal, FrmPrincipal);
+
+  Application.MainForm:= FrmPrincipal;
+  FrmPrincipal.Show;
+  FrmLogin.Close;
+end;
 
 end.
