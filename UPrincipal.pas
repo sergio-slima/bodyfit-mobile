@@ -5,7 +5,7 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
-  FMX.Controls.Presentation, FMX.StdCtrls, FMX.Layouts;
+  FMX.Controls.Presentation, FMX.StdCtrls, FMX.Layouts, FMX.ListBox;
 
 type
   TFrmPrincipal = class(TForm)
@@ -33,7 +33,11 @@ type
     Label8: TLabel;
     Image4: TImage;
     Label9: TLabel;
+    LbxTreinos: TListBox;
+    procedure FormShow(Sender: TObject);
   private
+    procedure CarregarTreinos;
+    procedure AddTreino(id_treino: integer; titulo, subtitulo: String);
     { Private declarations }
   public
     { Public declarations }
@@ -45,5 +49,45 @@ var
 implementation
 
 {$R *.fmx}
+
+uses UFrameTreinos;
+
+procedure TFrmPrincipal.AddTreino(id_treino: integer; titulo,
+  subtitulo: String);
+var
+  item: TListBoxItem;
+  frame: TFrameTreino;
+begin
+  item := TListBoxItem.Create(LbxTreinos);
+  item.Selectable := false;
+  item.Text := '';
+  item.Height := 90;
+  item.Tag := id_treino;
+
+  // Frame...
+  frame := TFrameTreino.Create(item);
+  frame.LblTitulo.Text := titulo;
+  frame.LblSubTitulo.Text := subtitulo;
+
+  item.AddObject(frame);
+
+  LbxTreinos.AddObject(item);
+end;
+
+procedure TFrmPrincipal.CarregarTreinos;
+begin
+  AddTreino(1, 'Segunda-feira', 'Abdômen e Pernas');
+  AddTreino(2, 'Terça-feira', 'Tríceps, Abdômen e Pernas');
+  AddTreino(3, 'Quarat-feira', 'Lombar e Abdômen');
+  AddTreino(4, 'Quinta-feira', 'Bíceps, Abdômen e Pernas');
+  AddTreino(5, 'Sexta-feira', 'Abdômen e Pernas');
+  AddTreino(6, 'Sábado', 'Peito e Pernas');
+  AddTreino(7, 'Domingo', 'Costas e Pernas');
+end;
+
+procedure TFrmPrincipal.FormShow(Sender: TObject);
+begin
+  CarregarTreinos;
+end;
 
 end.
