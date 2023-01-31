@@ -12,7 +12,7 @@ type
     Layout1: TLayout;
     Label1: TLabel;
     Label2: TLabel;
-    Image1: TImage;
+    ImgPerfil: TImage;
     Layout2: TLayout;
     RtgDashTreino: TRectangle;
     Rectangle1: TRectangle;
@@ -35,6 +35,9 @@ type
     Label9: TLabel;
     LbxTreinos: TListBox;
     procedure FormShow(Sender: TObject);
+    procedure LbxTreinosItemClick(const Sender: TCustomListBox;
+      const Item: TListBoxItem);
+    procedure ImgPerfilClick(Sender: TObject);
   private
     procedure CarregarTreinos;
     procedure AddTreino(id_treino: integer; titulo, subtitulo: String);
@@ -50,7 +53,7 @@ implementation
 
 {$R *.fmx}
 
-uses UFrameTreinos;
+uses UFrameTreinos, UTreinoDetalhe, UPerfil;
 
 procedure TFrmPrincipal.AddTreino(id_treino: integer; titulo,
   subtitulo: String);
@@ -88,6 +91,23 @@ end;
 procedure TFrmPrincipal.FormShow(Sender: TObject);
 begin
   CarregarTreinos;
+end;
+
+procedure TFrmPrincipal.ImgPerfilClick(Sender: TObject);
+begin
+  if not Assigned(FrmPerfil) then
+    Application.CreateForm(TFrmPerfil, FrmPerfil);
+
+  FrmPerfil.Show;
+end;
+
+procedure TFrmPrincipal.LbxTreinosItemClick(const Sender: TCustomListBox;
+  const Item: TListBoxItem);
+begin
+  if not Assigned(FrmTreinoDetalhe) then
+    Application.CreateForm(TFrmTreinoDetalhe, FrmTreinoDetalhe);
+
+  FrmTreinoDetalhe.Show;
 end;
 
 end.

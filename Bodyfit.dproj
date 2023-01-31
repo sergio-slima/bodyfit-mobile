@@ -415,6 +415,31 @@
             <Form>FrmTreinoDetalhe</Form>
             <FormType>fmx</FormType>
         </DCCReference>
+        <DCCReference Include="UTreinoCad.pas">
+            <Form>FrmTreinoCad</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
+        <DCCReference Include="Frames\UFrameFichaExercicio.pas">
+            <Form>FrameFichaExercicio</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="UExercicio.pas">
+            <Form>FrmExercicio</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
+        <DCCReference Include="UPerfil.pas">
+            <Form>FrmPerfil</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
+        <DCCReference Include="UPerfilCad.pas">
+            <Form>FrmPerfilCad</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
+        <DCCReference Include="UPerfilSenha.pas">
+            <Form>FrmPerfilSenha</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
