@@ -21,6 +21,8 @@ type
     Conn: TFDConnection;
     TabUsuario: TFDMemTable;
     QryUsuario: TFDQuery;
+    TabTreino: TFDMemTable;
+    QryTreinoExercicio: TFDQuery;
     procedure DataModuleCreate(Sender: TObject);
     procedure ConnBeforeConnect(Sender: TObject);
     procedure ConnAfterConnect(Sender: TObject);
@@ -30,6 +32,11 @@ type
     procedure LoginOnline(email, senha: String);
     procedure CriarContaOnline(nome, email, senha: String);
     procedure InserirUsuario(id_usuario: integer; nome, email: String);
+    procedure ListarTreinoExercicioOnline(id_usuario: integer);
+    procedure ExcluirTreinoExercicio;
+    procedure InserirTreinoExercicio(id_treino: integer; treino,
+                                     descr_treino: string; dia_semana, id_exercicio: integer; exercicio,
+                                     descr_exercicio, duracao, url_video: string);
     { Public declarations }
   end;
 
@@ -196,6 +203,53 @@ begin
       ParamByName('email').Value := email;
       ExecSQL;
     end;
+  end;
+end;
+
+procedure TDM.ListarTreinoExercicioOnline(id_usuario: integer);
+var
+  resp: IResponse;
+begin
+  TabTreino.FieldDefs.Clear;
+
+  resp := TRequest.New.BaseURL(BASE_URL)
+          .Resource('treinos')
+          .AddParam('id_usuario', id_usuario)
+          .BasicAuthentication('Sergio','123')
+          .Accept('application/json')
+          .DataSetAdapter(TabTreino)
+          .Get;
+
+  if resp.StatusCode <> 200 then
+    raise Exception.Create(resp.Content);
+end;
+
+procedure TDM.ExcluirTreinoExercicio;
+begin
+  Conn.ExecSQL('delete from tab_treino_exercicio');
+end;
+
+procedure TDM.InserirTreinoExercicio(id_treino: integer; treino, descr_treino: string;
+                                     dia_semana, id_exercicio: integer; exercicio,
+                                     descr_exercicio, duracao, url_video: string);
+begin
+  with QryTreinoExercicio do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Add('insert into tab_treino_exercicio(id_treino, treino, descr_treino,');
+    SQL.Add('dia_semana, id_exercicio, exercicio, descr_exercicio, duracao, url_video)');
+    SQL.Add('values(:id_treino, :treino, :descr_treino, :dia_semana');
+    SQL.Add(':id_exercicio, :exercicio, descr_exercicio, duracao, url_video');
+    ParamByName('id_treino').Value := id_treino;
+    ParamByName('treino').Value := treino;
+    ParamByName('descr_treino').Value := descr_treino;
+    ParamByName('dia_semana').Value := dia_semana;
+    ParamByName('id_exercicio').Value := id_exercicio;
+    ParamByName('exercicio').Value := exercicio;
+    ParamByName('descr_exercicio').Value := descr_exercicio;
+    ParamByName('duracao').Value := duracao;
+    ParamByName('url_video').Value := url_video;
   end;
 end;
 

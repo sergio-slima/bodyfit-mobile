@@ -5,7 +5,8 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
-  FMX.Controls.Presentation, FMX.StdCtrls, FMX.Layouts, FMX.ListBox;
+  FMX.Controls.Presentation, FMX.StdCtrls, FMX.Layouts, FMX.ListBox,
+  Loading, Session;
 
 type
   TFrmPrincipal = class(TForm)
@@ -41,6 +42,9 @@ type
   private
     procedure CarregarTreinos;
     procedure AddTreino(id_treino: integer; titulo, subtitulo: String);
+    procedure SincronizarTreinos;
+    procedure ThreadSincronizarTerminate(Sender: TObject);
+    procedure MontarDashboard;
     { Private declarations }
   public
     { Public declarations }
@@ -53,7 +57,7 @@ implementation
 
 {$R *.fmx}
 
-uses UFrameTreinos, UTreinoDetalhe, UPerfil;
+uses UFrameTreinos, UTreinoDetalhe, UPerfil, UDM;
 
 procedure TFrmPrincipal.AddTreino(id_treino: integer; titulo,
   subtitulo: String);
@@ -88,9 +92,56 @@ begin
   AddTreino(7, 'Domingo', 'Costas e Pernas');
 end;
 
+procedure TFrmPrincipal.MontarDashboard;
+begin
+  //montar
+end;
+
+procedure TFrmPrincipal.ThreadSincronizarTerminate(Sender: TObject);
+begin
+  TLoading.Hide;
+
+  MontarDashboard;
+end;
+
+procedure TFrmPrincipal.SincronizarTreinos;
+var
+  t: TThread;
+begin
+  TLoading.ShowF(FrmPrincipal, '');
+
+  t := TThread.CreateAnonymousThread(procedure
+  begin
+    DM.ListarTreinoExercicioOnline(TSession.ID_USUARIO);
+
+    with DM.TabTreino do
+    begin
+      if recordcount > 0 then
+        DM.ExcluirTreinoExercicio;
+
+      while not eof do
+      begin
+        DM.InserirTreinoExercicio(FieldByName('id_treino').AsInteger,
+                                  FieldByName('treino').AsString,
+                                  FieldByName('descr_treino').AsString,
+                                  FieldByName('dia_semana').AsInteger,
+                                  FieldByName('id_exercicio').AsInteger,
+                                  FieldByName('exercicio').AsString,
+                                  FieldByName('descr_exercicio').AsString,
+                                  FieldByName('duracao').AsString,
+                                  FieldByName('url_video').AsString);
+        Next;
+      end;
+    end;
+  end);
+
+  t.onTerminate := ThreadSincronizarTerminate;
+  t.Start;
+end;
+
 procedure TFrmPrincipal.FormShow(Sender: TObject);
 begin
-  CarregarTreinos;
+  SincronizarTreinos;
 end;
 
 procedure TFrmPrincipal.ImgPerfilClick(Sender: TObject);

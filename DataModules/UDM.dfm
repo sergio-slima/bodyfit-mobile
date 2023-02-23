@@ -21,12 +21,28 @@ object DM: TDM
     UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
     UpdateOptions.CheckRequired = False
     UpdateOptions.AutoCommitUpdates = True
-    Left = 56
-    Top = 96
+    Left = 176
+    Top = 40
   end
   object QryUsuario: TFDQuery
     Connection = Conn
-    Left = 136
-    Top = 104
+    Left = 40
+    Top = 88
+  end
+  object TabTreino: TFDMemTable
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    Left = 176
+    Top = 96
+  end
+  object QryTreinoExercicio: TFDQuery
+    Connection = Conn
+    Left = 32
+    Top = 144
   end
 end
