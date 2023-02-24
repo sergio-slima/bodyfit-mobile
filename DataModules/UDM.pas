@@ -23,6 +23,8 @@ type
     QryUsuario: TFDQuery;
     TabTreino: TFDMemTable;
     QryTreinoExercicio: TFDQuery;
+    QryConsEstatistica: TFDQuery;
+    QryConsTreino: TFDQuery;
     procedure DataModuleCreate(Sender: TObject);
     procedure ConnBeforeConnect(Sender: TObject);
     procedure ConnAfterConnect(Sender: TObject);
@@ -37,6 +39,10 @@ type
     procedure InserirTreinoExercicio(id_treino: integer; treino,
                                      descr_treino: string; dia_semana, id_exercicio: integer; exercicio,
                                      descr_exercicio, duracao, url_video: string);
+    function Pontuacao: integer;
+    function TreinosMes(dt: TDateTime): integer;
+    procedure TreinoSugerido(dt: TDateTime);
+    procedure ListarTreinos;
     { Public declarations }
   end;
 
@@ -66,7 +72,7 @@ begin
                  'ID_TREINO_EXERCICIO INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ' +
                  'ID_TREINO           INTEGER, ' +
                  'TREINO              VARCHAR(100), ' +
-                 'DESC_TREINO         VARCHAR(100), ' +
+                 'DESCR_TREINO         VARCHAR(100), ' +
                  'DIA_SEMANA          INTEGER, ' +
                  'ID_EXERCICIO        INTEGER, ' +
                  'EXERCICIO           VARCHAR(100), ' +
@@ -74,13 +80,13 @@ begin
                  'DURACAO             VARCHAR(100), ' +
                  'URL_VIDEO           VARCHAR(1000));'
                 );
-   // Tabela de Usuarios
+   // Tabela de Historico
   Conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_ATIVIDADE_HISTORICO (' +
                  'ID_HISTORICO    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ' +
                  'ID_TREINO       INTEGER, ' +
                  'DT_ATIVIDADE    DATETIME);'
                );
-   // Tabela de Usuarios
+   // Tabela de Atividade
   Conn.ExecSQL('CREATE TABLE IF NOT EXISTS TAB_ATIVIDADE (' +
                  'ID_ATIVIDADE     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ' +
                  'ID_TREINO        INTEGER, ' +
@@ -214,7 +220,7 @@ begin
 
   resp := TRequest.New.BaseURL(BASE_URL)
           .Resource('treinos')
-          .AddParam('id_usuario', id_usuario)
+          .AddParam('id_usuario', id_usuario.ToString)
           .BasicAuthentication('Sergio','123')
           .Accept('application/json')
           .DataSetAdapter(TabTreino)
@@ -240,7 +246,7 @@ begin
     SQL.Add('insert into tab_treino_exercicio(id_treino, treino, descr_treino,');
     SQL.Add('dia_semana, id_exercicio, exercicio, descr_exercicio, duracao, url_video)');
     SQL.Add('values(:id_treino, :treino, :descr_treino, :dia_semana');
-    SQL.Add(':id_exercicio, :exercicio, descr_exercicio, duracao, url_video');
+    SQL.Add(':id_exercicio, :exercicio, :descr_exercicio, :duracao, :url_video');
     ParamByName('id_treino').Value := id_treino;
     ParamByName('treino').Value := treino;
     ParamByName('descr_treino').Value := descr_treino;
@@ -250,6 +256,60 @@ begin
     ParamByName('descr_exercicio').Value := descr_exercicio;
     ParamByName('duracao').Value := duracao;
     ParamByName('url_video').Value := url_video;
+  end;
+end;
+
+function TDM.TreinosMes(dt: TDateTime): integer;
+begin
+  with QryConsEstatistica do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Add('select id_historico from tab_atividade_historico');
+    SQL.Add('where dt_atividade >= :dt1');
+    SQL.Add('and dt_atividade <= :dt2');
+    ParamByName('dt1').Value := FormatDateTime('yyyy-mm-dd', StartOfTheMonth(dt));
+    ParamByName('dt2').Value := FormatDateTime('yyyy-mm-dd', EndOfTheMonth(dt));
+    Open;
+    Result:= RecordCount;
+  end;
+end;
+
+function TDM.Pontuacao(): integer;
+begin
+  with QryConsEstatistica do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Add('select ifnull(pontos, 0) as pontos from tab_usuario');
+    Open;
+    Result:= FieldByName('pontos').AsInteger;
+  end;
+end;
+
+procedure TDM.TreinoSugerido(dt: TDateTime);
+begin
+  with QryConsEstatistica do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Add('select * from tab_treino_exercicio');
+    SQL.Add('where dia_semana = :dia_semana');
+    ParamByName('dia_semana').Value := DayOfWeek(dt);
+    Open;
+  end;
+end;
+
+procedure TDM.ListarTreinos;
+begin
+  with QryConsTreino do
+  begin
+    Close;
+    SQL.Clear;
+    SQL.Add('select distinct id_treino, descr_treino');
+    SQL.Add('from tab_treino_exercicio');
+    SQL.Add('order by dia_semana');
+    Open;
   end;
 end;
 

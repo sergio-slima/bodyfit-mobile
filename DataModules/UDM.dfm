@@ -7,6 +7,7 @@ object DM: TDM
     Params.Strings = (
       'LockingMode=Normal'
       'DriverID=SQLite')
+    Connected = True
     LoginPrompt = False
     AfterConnect = ConnAfterConnect
     BeforeConnect = ConnBeforeConnect
@@ -42,7 +43,17 @@ object DM: TDM
   end
   object QryTreinoExercicio: TFDQuery
     Connection = Conn
-    Left = 32
+    Left = 40
     Top = 144
+  end
+  object QryConsEstatistica: TFDQuery
+    Connection = Conn
+    Left = 40
+    Top = 200
+  end
+  object QryConsTreino: TFDQuery
+    Connection = Conn
+    Left = 40
+    Top = 256
   end
 end
